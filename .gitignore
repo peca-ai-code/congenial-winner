@@ -1,0 +1,108 @@
+chainlit_app/.env
+# General Python ignores
+*.log
+*.pot
+*.pyc
+__pycache__/
+*.sqlite3
+media/
+*.bak
+.idea/
+*.iws
+out/
+.idea/gradle.xml
+.idea/libraries
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.ipynb_checkpoints
+.python-version
+celerybeat-schedule.*
+*.sage.py
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django ignores
+/backend/gynecology_chatbot_project/db.sqlite3
+/backend/gynecology_chatbot_project/media
+
+# React ignores
+node_modules/
+/frontend/gynecology-chatbot-frontend/build
+/frontend/gynecology-chatbot-frontend/public/static
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python Virtual Environment
+venv/
+.venv/  # Another common name for virtual environments
+env/    # Yet another common name
+ENV/    # And another one (case-insensitive on some systems, but good to be explicit)
+*.env   # To catch any files ending with .env, often used for environment variables
+
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# OS X
+.DS_Store
+
+# Build artifacts
+build/
+dist/
+
+# Dependencies
+/backend/gynecology_chatbot_project/.env
+/backend/requirements.txt
+/frontend/gynecology-chatbot-frontend/node_modules
+
+# IntelliJ
+out/
+
+# JetBrains IDEs
+.idea/*
+*.iml
+
+# Netlify Folder
+.netlify/
+#test
