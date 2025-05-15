@@ -1,0 +1,90 @@
+/* Custom styles for the Gynecology Chatbot */
+
+/* General app styling */
+:root {
+    --primary-color: #e83e8c; /* Pink */
+    --primary-light: #f8bbce;
+    --primary-very-light: #fde8ef;
+    --secondary-color: #6c757d;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+}
+
+/* Apply a light background color to the entire app */
+body {
+    background-color: var(--primary-very-light) !important;
+}
+
+/* Style the sidebar */
+.sidebar {
+    background-color: white !important;
+}
+
+/* Style the chat header */
+.chat-header {
+    background-color: white !important;
+    border-bottom: 1px solid var(--primary-light) !important;
+}
+
+/* Style the chat title */
+.chat-title {
+    color: var(--primary-color) !important;
+    font-weight: bold !important;
+}
+
+/* Style user messages */
+.user-message {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Style AI provider labels */
+.provider-label {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    color: var(--secondary-color);
+}
+
+/* Style the input box */
+.chat-input-box {
+    border-color: var(--primary-light) !important;
+}
+
+/* Style the send button */
+.send-button {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Style the model comparison view */
+.model-comparison {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--primary-light);
+    overflow: hidden;
+}
+
+/* Style the tabs for model responses */
+.model-tabs {
+    background-color: white;
+    border-bottom: 1px solid var(--primary-light);
+}
+
+.model-tab {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.model-tab.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Style the response display area */
+.model-content {
+    padding: 1rem;
+    background-color: white;
+    min-height: 200px;
+}
