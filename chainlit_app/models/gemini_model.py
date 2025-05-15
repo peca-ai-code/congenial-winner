@@ -5,7 +5,7 @@ Google Gemini model integration.
 import google.generativeai as genai
 from typing import List, Dict, Any, Optional
 import asyncio
-from ..config import config
+from config import config
 
 class GeminiModel:
     """

@@ -10,7 +10,7 @@ import requests
 import json
 from typing import List, Dict, Any, Optional
 import asyncio
-from ..config import config
+from config import config
 
 class GrokModel:
     """

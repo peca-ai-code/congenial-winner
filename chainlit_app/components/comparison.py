@@ -4,7 +4,7 @@ Components for creating side-by-side model comparison UI.
 
 import chainlit as cl
 from typing import List, Dict, Any
-from ..config import config
+from config import config
 
 async def create_comparison_element(
     user_message: str,

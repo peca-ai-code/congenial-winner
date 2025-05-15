@@ -5,7 +5,7 @@ OpenAI (ChatGPT) model integration.
 import openai
 from typing import List, Dict, Any, Optional
 import asyncio
-from ..config import config
+from config import config
 
 class OpenAIModel:
     """
