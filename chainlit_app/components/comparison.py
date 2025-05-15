@@ -4,6 +4,10 @@ Components for creating side-by-side model comparison UI.
 
 import chainlit as cl
 from typing import List, Dict, Any
+# Change from ..config import config
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import config
 
 async def create_comparison_element(

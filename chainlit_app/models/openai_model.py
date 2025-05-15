@@ -5,6 +5,10 @@ OpenAI (ChatGPT) model integration.
 import openai
 from typing import List, Dict, Any, Optional
 import asyncio
+# Change from ..config import config
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import config
 
 class OpenAIModel:
