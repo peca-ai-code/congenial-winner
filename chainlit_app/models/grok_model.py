@@ -1,15 +1,15 @@
 """
 Grok model integration (simulation).
-
-Note: As of this implementation, Grok does not have a public API.
-This is a placeholder implementation that will need to be updated
-once a proper Grok API is available.
 """
 
 import requests
 import json
 from typing import List, Dict, Any, Optional
 import asyncio
+# Change from ..config import config
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import config
 
 class GrokModel:
