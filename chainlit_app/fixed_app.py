@@ -9,6 +9,7 @@ import openai
 import google.generativeai as genai
 import asyncio
 import uuid
+from config import config
 
 # Load environment variables
 load_dotenv()
@@ -22,11 +23,17 @@ openai_model = os.getenv("OPENAI_MODEL", "gpt-4")
 gemini_model = os.getenv("GEMINI_MODEL", "gemini-pro")
 
 # Configure OpenAI
-openai.api_key = openai_api_key
+if config.llms["openai"].api_key:
+    openai.api_key = config.llms["openai"].api_key
+else:
+    print("Warning: OpenAI API key not found in config. OpenAI features will be limited.")
 
 # Configure Gemini
 if gemini_api_key:
     genai.configure(api_key=gemini_api_key)
+else:
+    print("Warning: Gemini API key not found in config. Gemini features will be limited.")
+
 
 # System prompt for gynecology assistant
 SYSTEM_PROMPT = """
@@ -67,11 +74,17 @@ async def get_openai_response(user_message, chat_history=None):
         
         # Call OpenAI API
         response = await openai.ChatCompletion.acreate(
-            model=openai_model,
+            model=config.llms["openai"].model_id, # Use model_id from config
             messages=messages,
-            max_tokens=500,
-            temperature=0.7
+            max_tokens=config.llms["openai"].max_tokens,
+            temperature=config.llms["openai"].temperature
         )
+        # response = await openai.ChatCompletion.acreate(
+        #     model=openai_model,
+        #     messages=messages,
+        #     max_tokens=500,
+        #     temperature=0.7
+        # )
         
         return response.choices[0].message.content
     except Exception as e:
@@ -110,32 +123,55 @@ async def get_gemini_response(user_message, chat_history=None):
         # Make synchronous call in executor to be async-compatible
         loop = asyncio.get_event_loop()
         
-        # Define the function to call in the executor
+
         def generate_response():
             try:
-                # Initialize Gemini model
                 generation_config = {
-                    "temperature": 0.7,
-                    "max_output_tokens": 500,
+                    "temperature": config.llms["gemini"].temperature,    # Use config
+                    "max_output_tokens": config.llms["gemini"].max_tokens, # Use config
                 }
-                
+
                 model = genai.GenerativeModel(
-                    model_name=gemini_model,
+                    model_name=config.llms["gemini"].model_id, # Use config
                     generation_config=generation_config
                 )
-                
-                # Generate response
+
                 response = model.generate_content(formatted_history)
                 return response.text
             except Exception as e:
                 return f"Error in Gemini generation: {str(e)}"
-        
-        # Run in executor
+
         response_text = await loop.run_in_executor(None, generate_response)
         return response_text
-        
+
     except Exception as e:
         return f"Error generating response from Gemini: {str(e)}"
+        # Define the function to call in the executor
+        # def generate_response():
+        #     try:
+        #         # Initialize Gemini model
+        #         generation_config = {
+        #             "temperature": 0.7,
+        #             "max_output_tokens": 500,
+        #         }
+                
+        #         model = genai.GenerativeModel(
+        #             model_name=gemini_model,
+        #             generation_config=generation_config
+        #         )
+                
+        #         # Generate response
+        #         response = model.generate_content(formatted_history)
+        #         return response.text
+        #     except Exception as e:
+        #         return f"Error in Gemini generation: {str(e)}"
+        
+        # # Run in executor
+        # response_text = await loop.run_in_executor(None, generate_response)
+        # return response_text
+        
+    # except Exception as e:
+    #     return f"Error generating response from Gemini: {str(e)}"
 
 async def get_grok_response(user_message, chat_history=None):
     """Simulate a response from Grok (as no public API exists yet)."""
@@ -173,17 +209,29 @@ async def on_chat_start():
     ).send()
     
     # Set chat settings
-    await cl.ChatSettings(
-        [
-            cl.switches.Switch(id="show_all_models", label="Show All Model Responses", initial=True),
-            cl.select.Select(
-                id="primary_model",
-                label="Primary Response Model",
-                values=["ChatGPT", "Gemini", "Grok"],
-                initial="ChatGPT"
-            )
-        ]
-    ).send()
+    settings_elements = [
+        cl.Switch(id="show_all_models", label="Show All Model Responses", value=True), # Use value instead of initial
+        cl.Select(
+            id="primary_model",
+            label="Primary Response Model",
+            values=["ChatGPT", "Gemini", "Grok"],
+            initial_value="ChatGPT" # Use initial_value instead of initial
+        )
+    ]
+    await cl.ChatSettings(elements=settings_elements).send() # Pass elements as a keyword argument
+
+    # # Set chat settings
+    # await cl.ChatSettings(
+    #     [
+    #         cl.switches.Switch(id="show_all_models", label="Show All Model Responses", initial=True),
+    #         cl.select.Select(
+    #             id="primary_model",
+    #             label="Primary Response Model",
+    #             values=["ChatGPT", "Gemini", "Grok"],
+    #             initial="ChatGPT"
+    #         )
+    #     ]
+    # ).send()
 
 @cl.on_message
 async def on_message(message: cl.Message):
@@ -211,6 +259,10 @@ async def on_message(message: cl.Message):
     # Send thinking message
     thinking_msg = cl.Message(content="Generating responses...", author="Assistant")
     await thinking_msg.send()
+
+    # # Send thinking message
+    # thinking_msg = cl.Message(content="Generating responses...", author="Assistant")
+    # await thinking_msg.send()
     
     try:
         # Generate responses from all models concurrently
@@ -233,7 +285,11 @@ async def on_message(message: cl.Message):
         primary_response = response_dict[primary_model]
         
         # Update thinking message with primary response
-        await thinking_msg.update(content=primary_response)
+        thinking_msg.content = primary_response # Set the content attribute
+        await thinking_msg.update()             # Call update without arguments
+
+        # # Update thinking message with primary response
+        # await thinking_msg.update(content=primary_response)
         
         # Add to chat history
         chat_histories[conversation_id].append({
@@ -253,11 +309,17 @@ async def on_message(message: cl.Message):
                         content=f"**{model_name} Response:**\n\n{response_text}",
                         author=f"AI - {model_name}"
                     ).send()
-        
+
     except Exception as e:
         error_message = f"An error occurred: {str(e)}"
-        await thinking_msg.update(content=error_message)
+        thinking_msg.content = error_message # Set the content attribute
+        await thinking_msg.update()          # Call update without arguments
         cl.logger.error(f"Error processing message: {str(e)}")
+
+    # except Exception as e:
+    #     error_message = f"An error occurred: {str(e)}"
+    #     await thinking_msg.update(content=error_message)
+    #     cl.logger.error(f"Error processing message: {str(e)}")
 
 @cl.on_settings_update
 async def on_settings_update(settings):
@@ -267,12 +329,23 @@ async def on_settings_update(settings):
     if not conversation_id:
         conversation_id = await get_conversation_id()
         cl.user_session.set("conversation_id", conversation_id)
+
+        # Initialize settings for this new/unexpected conversation_id
+        chat_histories[conversation_id] = [] # Also good to initialize history
+        user_settings[conversation_id] = {
+            "show_all_models": True,
+            "primary_model": "ChatGPT"
+        }
     
     # Update settings for this conversation
-    user_settings[conversation_id] = settings
+    user_settings[conversation_id].update(settings) # Use update to merge new settings
+    # # Update settings for this conversation
+    # user_settings[conversation_id] = settings
     
-    model_name = settings.get("primary_model", "ChatGPT")
-    show_all = settings.get("show_all_models", True)
+    model_name = user_settings[conversation_id].get("primary_model", "ChatGPT")
+    show_all = user_settings[conversation_id].get("show_all_models", True)
+    # model_name = settings.get("primary_model", "ChatGPT")
+    # show_all = settings.get("show_all_models", True)
     
     message = f"Settings updated: Primary model set to {model_name}."
     if show_all:

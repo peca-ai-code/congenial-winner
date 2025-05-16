@@ -16,8 +16,8 @@ class LLMConfig(BaseModel):
     name: str
     api_key: str
     model_id: str
-    max_tokens: int = 500
-    temperature: float = 0.7
+    max_tokens: int = 200
+    temperature: float = 0.1
     display_name: str
     color: str  # Color for UI display
 
@@ -30,21 +30,21 @@ class AppConfig(BaseModel):
         "openai": LLMConfig(
             name="openai",
             api_key=os.getenv("OPENAI_API_KEY", ""),
-            model_id=os.getenv("OPENAI_MODEL", "gpt-4"),
+            model_id=os.getenv("OPENAI_MODEL", "gpt-4o"),
             display_name="ChatGPT",
             color="#10a37f"  # OpenAI green
         ),
         "gemini": LLMConfig(
             name="gemini",
             api_key=os.getenv("GEMINI_API_KEY", ""),
-            model_id=os.getenv("GEMINI_MODEL", "gemini-pro"),
+            model_id=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
             display_name="Gemini",
-            color="#1a73e8"  # Google blue
+            color="#1a73e8"  # Google blue gemini-pro
         ),
         "grok": LLMConfig(
             name="grok",
             api_key=os.getenv("GROK_API_KEY", ""),
-            model_id=os.getenv("GROK_MODEL", "grok-1"),
+            model_id=os.getenv("GROK_MODEL", "grok-2"),
             display_name="Grok",
             color="#ff0000"  # Xitter red-ish
         )
